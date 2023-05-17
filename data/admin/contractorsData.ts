@@ -45,7 +45,7 @@ export const CONTRACTOR_UPDATED = {
 }
 
 export const CONTRACTOR_TO_DELETE = {
-    name: 'Contractor to Delete',
+    name: 'Automated Test Contractor to Delete',
     code: 'CNTDLT-1',
     description: 'Contractor Description tO Delete',
     phone1: '33333333',

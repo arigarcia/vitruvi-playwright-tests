@@ -1,4 +1,5 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
+import { devices } from '@playwright/test';
 import dotenv from 'dotenv';
 import path from 'path';
 
@@ -51,21 +52,21 @@ const config: PlaywrightTestConfig = {
     {
       name: 'chromium',
       use: {
-        channel: 'chrome'
+        ...devices['Desktop Chrome'],
       },
     },
 
     {
       name: 'firefox',
       use: {
-        channel: 'firefox'
+        ...devices['Desktop Firefox'],
       },
     },
 
     {
       name: 'webkit',
       use: {
-        channel: 'webkit'
+        ...devices['Desktop Safari'],
       },
     },
 

@@ -15,3 +15,4 @@ export default async (page) => {
 
     await page.getByTitle('Hide Map').locator('i').click();
 }
+

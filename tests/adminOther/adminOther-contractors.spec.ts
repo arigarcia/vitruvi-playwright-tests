@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
-import { RequestBuilder } from '../utilities/requestUtility' 
-import login from '../utilities/login'
+import { RequestBuilder } from '../../utilities/requestUtility' 
+import login from '../../utilities/login'
 
-import { ADD_CONTRACTOR, CONTRACTOR_TO_UPDATE, CONTRACTOR_UPDATED, CONTRACTOR_TO_DELETE } from '../data/admin/contractorsData';
-import ContractorsPage from '../elements/admin/contractorsPage';
+import { ADD_CONTRACTOR, CONTRACTOR_TO_UPDATE, CONTRACTOR_UPDATED, CONTRACTOR_TO_DELETE } from '../../data/admin/contractorsData';
+import ContractorsPage from '../../elements/admin/contractorsPage';
 
 const API_ENDPOINT = '/api/v1/subcontractors/';
 const WEB_URL = '/#/app/admin/contractor';
@@ -11,8 +11,11 @@ const WEB_URL = '/#/app/admin/contractor';
 let apiRequest;
 
 test.describe('Contractors test', () => {
-    test.beforeAll(async ({ page }) => {
+    test.beforeAll(async () => {
         apiRequest = await RequestBuilder.build(API_ENDPOINT);
+    })
+
+    test.beforeEach(async ({ page }) => {
         await login(page);
     })
 

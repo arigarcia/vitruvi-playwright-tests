@@ -1,26 +1,18 @@
 import { expect, Locator, Page } from '@playwright/test';
+import Sidebar from '../generic/sidebar';
+import DeleteModal from '../generic/deleteModal';
+import VitruviPage from '../generic/page';
 
-class DeleteModal {
-    readonly page: Page;
-    readonly heading: Locator;
-    readonly message: Locator;
-    readonly deleteButton: Locator;
-
+class ContractorDeleteModal extends DeleteModal {
     constructor(page: Page, contractorName: string) {
-        this.page = page;
+        super(page);
         this.heading = page.getByRole('heading', { name: 'Confirm Delete' });
         this.message = page.getByText(`Are you sure you want to delete ${contractorName}?`);
         this.deleteButton = page.getByRole('button', { name: 'Delete' });
     }
-
-    async confirmDeletion() {
-        await expect(this.heading).toBeVisible();
-        await expect(this.message).toBeVisible();
-        await this.deleteButton.click();
-    }
 }
 
-class ContractorSidebar {
+class ContractorSidebar extends Sidebar {
     readonly page: Page;
     readonly name: Locator;
     readonly code: Locator;
@@ -38,7 +30,7 @@ class ContractorSidebar {
     readonly deleteButton: Locator;
 
     constructor(page: Page) {
-        this.page = page;
+        super(page);
         this.name = page.getByLabel('Name*');
         this.code = page.getByLabel('Code*');
         this.description = page.getByLabel('Description');
@@ -70,10 +62,6 @@ class ContractorSidebar {
         await this.country.fill(contractor.country);
     }
 
-    async save() {
-        await this.saveButton.click()
-    }
-
     async containsCorrectInformation(contractor) {
         await expect(this.name).toHaveValue(contractor.name);
         await expect(this.code).toHaveValue(contractor.code);
@@ -88,24 +76,14 @@ class ContractorSidebar {
         await expect(this.region).toHaveValue(contractor.region);
         await expect(this.country).toHaveValue(contractor.country);
     }
-
-    async delete() {
-        await this.deleteButton.click()
-    }
 }
 
-export default class ContractorsPage {
-    readonly page: Page;
-    readonly expandButton: Locator;
-    readonly addButton: Locator;
-    readonly searchField: Locator;
-    readonly rowActionsButton: Locator;
-    readonly editButton: Locator;
-    readonly sidebar: ContractorSidebar;
-    deleteModal: DeleteModal;
+export default class ContractorsPage extends VitruviPage {
+    sidebar: ContractorSidebar;
+    deleteModal: ContractorDeleteModal;
 
     constructor(page: Page) {
-        this.page = page;
+        super(page);
         this.expandButton = page.locator('header').filter({ hasText: 'Contractors' }).getByTitle('Expand');
         this.addButton = page.locator('//*[@id="content"]/vit-contractor-page/div/div/vit-widget-grid-editable/section/header/div[2]/a[1]')
         this.searchField = page.getByRole('textbox', { name: 'Search' });
@@ -115,31 +93,25 @@ export default class ContractorsPage {
         this.sidebar = new ContractorSidebar(page);
     }
 
-    async goto(webURL: string) {
-        await this.page.goto(webURL);
-    }
-
-    async expand() {
-        await this.expandButton.click()
-    }
-
-    async add() {
-        await this.addButton.click()
-    }
-
     async recordVisibleInGrid(contractorName: string) {
         await expect(this.page.getByText(contractorName)).toBeVisible();
     }
 
     async editRecord(contractorName: string) {
-        await this.searchField.fill(contractorName)
+        await this.searchField.fill(contractorName);
+        await this.page.waitForTimeout(1000);
+        //await this.page.waitForFunction('partialSearch');
         await this.rowActionsButton.click();
         await this.editButton.click();
         await expect(this.sidebar.name).toHaveValue(contractorName);
     }
 
     async confirmDelete(contractorName: string) {
-        this.deleteModal = new DeleteModal(this.page, contractorName);
+        this.deleteModal = new ContractorDeleteModal(this.page, contractorName);
         await this.deleteModal.confirmDeletion();
+    }
+
+    async clickOnContractor(contractorName: string) {
+        await this.page.getByText(contractorName).click();
     }
 }

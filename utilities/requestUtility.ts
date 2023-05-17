@@ -54,9 +54,9 @@ export class RequestBuilder {
         return new RequestBuilder(req, endpoint)
     }
 
-    async post (params) {
+    post = async (params) => {
         const response = await this.request.post(this.endpoint, { data: params })
-        await expect(response.ok()).toBeTruthy();
+        await expect(response.ok(), `POST response [${response.status()}]: ${await response.body()}`).toBeTruthy();
         return response
     }
 
@@ -66,21 +66,19 @@ export class RequestBuilder {
                 search: criteria
             }
         })
-        await expect(response.ok()).toBeTruthy();
-        return response
+        await expect(response.ok(), `SEARCH GET response [${response.status()}]: ${await response.body()}`).toBeTruthy();
+        return response.json()
     }
 
     delete = async (id) => {
         const response = await this.request.delete(`${this.endpoint}${id}`)
-        await expect(response.ok()).toBeTruthy();
         console.log(`contractor ${id} deleted`)
+        await expect(response.ok(), `DELETE response [${response.status()}]: ${await response.body()}`).toBeTruthy();
         return response
     }
 
     searchAndDelete = async (criteria, value) => {
-        const matchingRecords = await this.search(value)
-    
-        const results = JSON.parse(await matchingRecords.text())
+        const results = await this.search(value)
         results['results'].forEach(async (record) => {
             console.log(record)
             if(record[criteria] === value) {
